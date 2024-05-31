@@ -8,17 +8,22 @@ export default function State() {
     const [cities, setCities] = useState([]);
     const [selectedCountry, setSelectedCountry] = useState(null);
     const [selectedState, setSelectedState] = useState(null);
-    const [selectedCity, setSelectedCity] = useState(null); // Added state for selected city
+    const [selectedCity, setSelectedCity] = useState(null);
     const [flag, setFlag] = useState(false);
+    const [error, setError] = useState(null);
 
     const fetchData = async (url, setData) => {
         try {
             const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
             const data = await response.json();
             const options = data.map(item => ({ value: item, label: item }));
             setData(options);
         } catch (e) {
             console.error(e);
+            setError(e.message);
         }
     };
 
@@ -28,11 +33,12 @@ export default function State() {
 
     const handleCountryChange = (selectedOption) => {
         setSelectedCountry(selectedOption);
-        setSelectedState(null); // Reset state when country changes
-        setSelectedCity(null); // Reset city when country changes
-        setStates([]); // Reset states when country changes
-        setCities([]); // Reset cities when country changes
-        setFlag(false); //Reset the flag. Otherwise for the next select of country it will show runtime error
+        setSelectedState(null);
+        setSelectedCity(null);
+        setStates([]);
+        setCities([]);
+        setFlag(false);
+        setError(null);
         if (selectedOption) {
             fetchData(`https://crio-location-selector.onrender.com/country=${selectedOption.value}/states`, setStates);
         }
@@ -40,9 +46,10 @@ export default function State() {
 
     const handleStateChange = (selectedOption) => {
         setSelectedState(selectedOption);
-        setSelectedCity(null); // Reset city when state changes
-        setCities([]); // Reset cities when state changes
+        setSelectedCity(null);
+        setCities([]);
         setFlag(false);
+        setError(null);
         if (selectedOption) {
             fetchData(`https://crio-location-selector.onrender.com/country=${selectedCountry.value}/state=${selectedOption.value}/cities`, setCities);
         }
@@ -51,11 +58,12 @@ export default function State() {
     const handleCityChange = (selectedOption) => {
         setSelectedCity(selectedOption);
         setFlag(true);
-    }
+    };
 
     return (
         <div>
             <h1>Search Location</h1>
+            {error && <p className="error">Error: {error}</p>}
             <div className="select">
                 <Select
                     className="selectItem1"
@@ -82,7 +90,9 @@ export default function State() {
                 />
             </div>
 
-            {flag ? <h4>You Selected {selectedCity.label}, {selectedState.label}, {selectedCountry.label}</h4> : null}
+            {flag && selectedCity && selectedState && selectedCountry && (
+                <h4>You selected {selectedCity.label}, {selectedState.label}, {selectedCountry.label}</h4>
+            )}
         </div>
     );
 }
