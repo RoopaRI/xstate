@@ -82,7 +82,7 @@ export default function State() {
                 />
             </div>
 
-            {flag ? <h4>Use Selected {selectedCity.label} {selectedState.label} {selectedCountry.label}</h4> : null}
+            {flag ? <h4>You Selected {selectedCity.label}, {selectedState.label}, {selectedCountry.label}</h4> : null}
         </div>
     );
 }
