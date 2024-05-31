@@ -1,0 +1,16 @@
+.select{
+    display: flex;
+    justify-content: space-between;
+    padding:20px;
+    gap:20px;
+}
+
+
+.selectItem1{
+    width:50%;
+}
+
+.selectItem{
+    width:25%;
+}
+
